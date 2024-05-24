@@ -84,7 +84,7 @@ frappe.listview_settings['Sales Order'] = {
 		},
 		action(doc) {
 			let d = new frappe.ui.Dialog({
-				size: "small",
+				size: "medium",
 				title: 'Sales Order Details',
 				fields: [
 					{
@@ -93,19 +93,17 @@ frappe.listview_settings['Sales Order'] = {
 						fieldtype: 'HTML'
 					},
 				],
-
 			});
-			frappe.db.get_value("Sales Order",doc.name,'order_type')
-				.then(r => { 
-				if(r.message.order_type){
-					var html = "<table border = 1 width = 100%  style =text-align:center> <tr><th>Document Name</th><th>Order type</th></tr><tr><td>"+doc.name+"</td><td>"+r.message.order_type+"</td></tr></table>"
-					d.fields_dict.so_details.$wrapper.html(html);
-					d.fields_dict.sodetails.$wrapper.html(html);
+			frappe.call({
+				method:"acube.acube.overrides.sales_order.stock_popup",
+				args:{
+					name:doc.name
+				},
+				callback(r){
+					d.fields_dict.so_details.$wrapper.html(r.message);
 				}
-				
 			})
-			d.show();
-			
+			d.show();			
 		},
 	},
 };
